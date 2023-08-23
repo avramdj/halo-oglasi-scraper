@@ -1,0 +1,5 @@
+beautifulsoup4
+selenium
+pymongo
+discord.py
+requests
