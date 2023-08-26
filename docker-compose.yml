@@ -12,6 +12,7 @@ services:
       - .:/app
     depends_on:
       - mongo
+    restart: always
 
   mongo:
     image: mongo
