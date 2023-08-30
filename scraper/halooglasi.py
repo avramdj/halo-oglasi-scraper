@@ -1,17 +1,25 @@
 import time
+from contextlib import contextmanager
+import traceback
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import multiprocessing as mp
 
+from scraper.logger import logger
 
-def create_driver():
+
+@contextmanager
+def autoquit_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
-    return driver
+    try:
+        yield driver
+    finally:
+        driver.quit()
 
 
 def get_soup(url, driver):
@@ -40,35 +48,19 @@ def get_properties(soup):
     return properties
 
 
-def scrape(url, results):
-    """
-    called from parent process
-    """
-    driver = create_driver()
-    soup = get_soup(url, driver)
-    properties = get_properties(soup)
-    driver.quit()
-
-    for p in properties:
-        results.append(p)
-
-
-def _get_latest(url):
-    results = mp.Manager().list()
-    p = mp.Process(target=scrape, args=(url, results))
-    p.start()
-    p.join()
-    return results
+def scrape(url):
+    with autoquit_driver() as driver:
+        soup = get_soup(url, driver)
+        properties = get_properties(soup)
+        return properties
 
 
 def get_latest_with_retry(url, max_retries=5, sleep_time=5):
-    """
-    sleep and retry if no results
-    """
-    results = []
-    retries = 0
-    while not results and retries < max_retries:
-        results = _get_latest(url)
-        retries += 1
-        time.sleep(sleep_time)
-    return results
+    for attempt in range(max_retries):
+        try:
+            return scrape(url)
+        except Exception as e:
+            traceback.print_exc()
+            logger.warning(f"Attempt {attempt} -- An exception occurred: {e}")
+            time.sleep(sleep_time)
+    raise SystemExit("Reached max retries. Exiting...")

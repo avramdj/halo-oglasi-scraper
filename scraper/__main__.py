@@ -32,8 +32,6 @@ if __name__ == "__main__":
         for url in urls:
             logger.info(f"Scraping... {get_local_time()}")
             results = get_latest_with_retry(url, max_retries=5, sleep_time=SLEEP_TIME)
-            if not results:
-                raise SystemExit("No results, exiting...")
             for link, price, name, location in results[::-1]:
                 if not check_if_exists(link):
                     insert_property(link, price, name, location)
