@@ -4,8 +4,8 @@ services:
   scraper:
     build: .
     environment:
-      CFG_FILE: ${CFG_FILE}
-      SLEEP_TIME: ${SLEEP_TIME}
+      CFG_FILE: ${CFG_FILE:-/app/config.json}
+      SLEEP_TIME: ${SLEEP_TIME:-30}
       MONGO_URI: mongodb://root:example@mongo:27017
     volumes:
       - .:/app
