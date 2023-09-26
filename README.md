@@ -10,3 +10,5 @@ make a `config.json` in proj root that looks something like:
     "link to another URL": "(potentially different) discord hook"
 }
 ```
+
+then run the compose
