@@ -11,4 +11,6 @@ make a `config.json` in proj root that looks something like:
 }
 ```
 
+u can also make an `.env` with SLEEP_TIME and CFG_FILE (points to `/app/config.json` by defaulrt)
+
 then run the compose
