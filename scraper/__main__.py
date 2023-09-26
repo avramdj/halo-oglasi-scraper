@@ -18,7 +18,7 @@ def get_local_time():
 
 
 def main():
-    CFG_FILE = os.environ.get("CFG_FILE")
+    CFG_FILE = os.environ.get("CFG_FILE", "config.json")
     SLEEP_TIME = float(os.environ.get("SLEEP_TIME"))
 
     config = []
